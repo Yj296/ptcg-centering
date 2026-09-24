@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>PTCG卡片居中量化检查工具 v1.0.11 王bibi战队荣誉出品</title>
+<title>PTCG卡片居中量化检查工具 v1.0.12 王bibi战队荣誉出品</title>
 <style>
   :root{
     --bg:#f0f2f5; --card:#ffffff; --accent:#007ACC; --danger:#D9534F;
@@ -44,6 +44,13 @@
   #contrastPanel label{font-size:12px; color:#555; flex:none; width:52px;}
   #contrastPanel input[type=range]{flex:1; height:26px;}
   #ctrVal{font-size:12px; color:var(--accent); width:44px; text-align:right;}
+  /* 版权声明弹窗 */
+  #notice{position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; z-index:99; padding:16px;}
+  #notice.hidden{display:none;}
+  #notice .box{background:#fff; border-radius:14px; padding:20px 22px; max-width:86%; text-align:center; box-shadow:0 10px 34px rgba(0,0,0,.35);}
+  #notice .box p{font-size:14px; color:#333; line-height:1.8; margin:0 0 12px;}
+  #notice .box .cr{font-size:12px; color:#888; margin-bottom:16px;}
+  #notice .box .btn{margin-top:2px;}
   #result{display:none; background:#f7f9fb; border:1px solid #e3e6ea; border-radius:8px; padding:8px 10px; margin-bottom:6px;}
   #result.show{display:block;}
   #result h4{margin:0 0 6px; font-size:13px; color:#333;}
@@ -62,7 +69,7 @@
   <header>
     <div>
       <div class="title">PTCG卡片居中量化检查工具</div>
-      <div class="ver">v1.0.11 · 王bibi战队荣誉出品</div>
+      <div class="ver">v1.0.12 · 王bibi战队荣誉出品</div>
     </div>
   </header>
   <div id="stagebar">
@@ -87,7 +94,7 @@
   <div id="result">
     <h4>量化分析结果</h4>
     <div class="sel">
-      <select id="sideSel"><option value="front">正面</option><option value="back">背面</option></select>
+      <span style="font-size:12px; color:#555; flex:none;">评级口径</span>
       <select id="tableSel">
         <option>PSA 正面</option><option>PSA 背面</option>
         <option>BGS 正面</option><option>CGC 正面</option>
@@ -101,6 +108,13 @@
       <tr><td>限制轴</td><td id="rWorse">--</td></tr>
       <tr><td>评级上限</td><td id="rGrade" class="grade">--</td></tr>
     </table>
+  </div>
+  <div id="notice">
+    <div class="box">
+      <p>本软件由成都市知名战队“王bibi战队有门禁”激情制作，欢迎转发，允许免费使用、修改和转发，但禁止任何商业用途。请保留原作者版权声明。</p>
+      <p class="cr">版权所有 © [2026] [王bibi战队]</p>
+      <button class="btn primary" id="noticeOk">知道了</button>
+    </div>
   </div>
   <div id="ctrl">
     <div id="rows1">
@@ -182,7 +196,7 @@ if (typeof exports === 'object' && typeof module === 'object')
 <script>
 "use strict";
 /* ============================================================
-   PTCG卡片居中量化检查工具 Web版 v1.0.11 —— 王bibi战队荣誉出品
+   PTCG卡片居中量化检查工具 Web版 v1.0.12 —— 王bibi战队荣誉出品
    逻辑移植自桌面版（Python/OpenCV/Tkinter）
    ============================================================ */
 
@@ -378,6 +392,7 @@ function initUI(){
   $("navPlace").addEventListener("click",placePoint);
   $("navStepBtn").addEventListener("click",navStepCycle);
   $("navStepBtn").textContent="步长"+App.step+"px";   // 初始文本同步默认步长
+  $("noticeOk").addEventListener("click",()=>$("notice").classList.add("hidden"));
   window.addEventListener("keydown",e=>{
     const t=e.target;
     if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA")) return;
@@ -388,7 +403,6 @@ function initUI(){
   $("btnContrast").addEventListener("click",()=>{$("contrastPanel").classList.toggle("show");});
   $("ctrSlider").addEventListener("input",onCtrSlider);
   $("ctrReset").addEventListener("click",()=>applyContrast(1.0));
-  $("sideSel").addEventListener("change",()=>calcResult());
   $("tableSel").addEventListener("change",()=>calcResult());
   // 画布交互
   cvC.addEventListener("pointerdown",onDown);
